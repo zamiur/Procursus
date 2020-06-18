@@ -1,0 +1,58 @@
+language: c
+os: osx
+osx_image: xcode11.5
+git:
+  submodules: true
+  depth: 1
+before_install:
+- ssh-keyscan github.com >> ~/.ssh/known_hosts
+- export NO_PGP=1
+- brew update
+- brew upgrade
+- brew install gnupg gnutls gnu-sed make cmake pkg-config findutils gnu-tar gpatch
+  bash openssl@1.1 ldid libtool automake bison flex groff fakeroot dpkg zstd ncurses
+- brew unlink gnupg gnutls gnu-sed make cmake pkg-config findutils gnu-tar gpatch
+  bash openssl@1.1 ldid libtool automake bison flex groff fakeroot dpkg zstd ncurses
+- brew link --force --overwrite gnupg gnutls gnu-sed make cmake pkg-config findutils
+  gnu-tar gpatch bash openssl@1.1 ldid libtool automake bison flex groff fakeroot
+  dpkg zstd ncurses
+- gmake vim-package
+- cd $HOME
+- git config --global user.name $username
+- git config --global user.email $email
+- git clone https://github.com/ProcursusTeam/repo.git
+- find build/ProcursusTeam/Procursus/build_dist -type f -name "*.deb"
+- cd repo
+- git checkout builds
+- git rm -rf .
+- mkdir -p pool/main/appletvos-arm64/1300/ pool/main/iphoneos-arm64/1600/ pool/main/iphoneos-arm64/1500/ pool/main/watchos-arm/1400/ pool/main/watchos-arm64/1400/
+- cd $HOME
+- if [ -d "build/ProcursusTeam/Procursus/build_dist/appletvos-arm64/1300" ]; then
+  find build/ProcursusTeam/Procursus/build_dist/appletvos-arm64/1300 -type f -name
+  "*.deb" -exec cp {} repo/pool/main/appletvos-arm64/1300/ \; ; fi
+- if [ -d "build/ProcursusTeam/Procursus/build_dist/iphoneos-arm64/1600" ]; then find
+  build/ProcursusTeam/Procursus/build_dist/iphoneos-arm64/1600 -type f -name "*.deb"
+  -exec cp {} repo/pool/main/iphoneos-arm64/1600/ \; ; fi
+- if [ -d "build/ProcursusTeam/Procursus/build_dist/iphoneos-arm64/1500" ]; then find
+  build/ProcursusTeam/Procursus/build_dist/iphoneos-arm64/1500 -type f -name "*.deb"
+  -exec cp {} repo/pool/main/iphoneos-arm64/1500/ \; ; fi
+- if [ -d "build/ProcursusTeam/Procursus/build_dist/watchos-arm/1400" ]; then find
+  build/ProcursusTeam/Procursus/build_dist/watchos-arm/1400 -type f -name "*.deb"
+  -exec cp {} repo/pool/main/watchos-arm/1400/ \; ; fi
+- if [ -d "build/ProcursusTeam/Procursus/build_dist/watchos-arm64/1400" ]; then find
+  build/ProcursusTeam/Procursus/build_dist/watchos-arm64/1400 -type f -name "*.deb"
+  -exec cp {} repo/pool/main/watchos-arm64/1400/ \; ; fi
+- cd repo
+- git add -A
+- git commit -m "Travis-$(date +'%Y%m%d%H%M%S')"
+- git remote set-url origin https://${GH_TOKEN}@github.com/ProcursusTeam/repo.git
+- git push origin builds
+script: echo -n ""
+cache:
+  directories:
+  - "$HOME/Library/Caches/Homebrew"
+  - "/usr/local/Homebrew"
+  - "$HOME/build/ProcursusTeam/Procursus/build_source"
+env:
+  global:
+    secure: iSmwsmLhpBO4ImZQGrab+15j6IrlwztTUWL+MCJJgxffrPI9qJguNxYet8fNs8Sb/LYpM3xYVGlo2GiFmJHag6MSBDFVGy1OBqhOzuQkF5hL9Ic8+55ISzaOsQseg+hkvO4JwNFYqO6W4+/pFNyI3rKHdKlPcCwcZ5pZ4rZX4YXGSY/8eKtMUbythLJ9GvKQD8Y+wywDD6jjIwOhW9J1Sn0SaMuKPtAN0XUzwgpg3KWZehWPYnDYtqj2UtLpTrDB+jO5KHCkiA4eTkaU4HHI9zYA9Di/RF7nYU/GA4t7IFRuMEDdFqQiIjcvnk+GQQr1tyOyX7MXSeD01FhYS8zu2sQdDqipfAQnIfmoh3U6m1qMgtEik8SLShxX5b/shdoE0UtUXKzNf9BptUvFiBoH+fRz4L/fTdxsIw7sPIYpZ4galYQJKGmpu2FbCEcJJJqNBuWKE5yycn2bxgoOWYUGqzy2G1YFhB/2T3hmylzmaLUo7vCvyOq2j2LB9yyXRUsiW4thn7UJruyTthjQTVlFRF6SnhLlrr3lwATLiK+LD0EFXj5ZFfrdoZgjN8f66oG9pmK4x0oV+BwZ4eWJAvRPgf4ejlibITKypE3tCS44mtW5GUv3nn3ERrXJ6eVQuETTiGM5Y/Wzfmy8SEfnYo5E6NMedBJoB6Qw5nnn8ypBGao=
