@@ -36,15 +36,13 @@ python3:
 	@echo "Using previously built python3."
 else
 python3: .SHELLFLAGS=-O extglob -c
-python3: python3-setup gettext libffi ncurses readline xz openssl libgdbm
+python3: python3-setup
 	cd $(BUILD_WORK)/python3 && autoconf -f
 	cd $(BUILD_WORK)/python3 && ./configure -C \
 		--host=$(GNU_HOST_TRIPLE) \
 		--build=$(shell $(BUILD_WORK)/python3/config.guess) \
 		--prefix=/usr \
-		--enable-ipv6 \
 		--without-ensurepip \
-		--with-system-ffi \
 		--enable-shared \
 		ac_cv_file__dev_ptmx=no \
 		ac_cv_file__dev_ptc=no \

@@ -15,12 +15,17 @@ ifneq ($(shell umask),0022)
 $(error Please run `umask 022` before running this)
 endif
 
-MEMO_TARGET          ?= iphoneos-arm64
-MEMO_CFVER           ?= 1600
+MEMO_TARGET          ?= iphoneos-arm
+MEMO_CFVER           ?= 400
 # iOS 13.0 == 1665.15.
 CFVER_WHOLE          := $(shell echo $(MEMO_CFVER) | cut -d. -f1)
 
-ifeq ($(shell [ "$(CFVER_WHOLE)" -ge 1100 ] && [ "$(CFVER_WHOLE)" -lt 1200 ] && echo 1),1)
+ifeq ($(shell [ "$(CFVER_WHOLE)" -ge 400 ] && [ "$(CFVER_WHOLE)" -lt 500 ] && echo 1),1)
+IPHONE_MIN           := 2.0
+TVOS_MIN             := XXX
+WATCH_MIN            := XXX
+override MEMO_CFVER  := 400
+else ifeq ($(shell [ "$(CFVER_WHOLE)" -ge 1100 ] && [ "$(CFVER_WHOLE)" -lt 1200 ] && echo 1),1)
 IPHONE_MIN           := 8.0
 TVOS_MIN             := XXX
 WATCH_MIN            := 1.0
@@ -56,18 +61,10 @@ endif
 
 ifeq ($(MEMO_TARGET),iphoneos-arm)
 $(warning Building for iOS)
-ARCHES               := armv7
+ARCHES               := armv6 armv7 arm64
 PLATFORM             := iphoneos
 DEB_ARCH             := iphoneos-arm
-GNU_HOST_TRIPLE      := armv7-apple-darwin
-PLATFORM_VERSION_MIN := -miphoneos-version-min=$(IPHONE_MIN)
-
-else ifeq ($(MEMO_TARGET),iphoneos-arm64)
-$(warning Building for iOS)
-ARCHES               := arm64
-PLATFORM             := iphoneos
-DEB_ARCH             := iphoneos-arm
-GNU_HOST_TRIPLE      := aarch64-apple-darwin
+GNU_HOST_TRIPLE      := arm-apple-darwin
 PLATFORM_VERSION_MIN := -miphoneos-version-min=$(IPHONE_MIN)
 
 else ifeq ($(MEMO_TARGET),appletvos-arm64)
